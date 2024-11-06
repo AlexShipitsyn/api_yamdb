@@ -1,9 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.core.exceptions import ValidationError
-from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.contrib.auth import get_user_model
+
+from .validators import characters_validator, year_validator
 
 
 class User(AbstractUser):
@@ -29,12 +28,6 @@ class User(AbstractUser):
     def is_moderator(self):
         return self.role == self.Role.MODERATOR
 
-def year_validator(value):
-    if value > timezone.now().year:
-        raise ValidationError(
-            'Пожалуйста, введите корректный год!'
-        )
-
 
 class Category(models.Model):
     name = models.CharField(
@@ -46,6 +39,7 @@ class Category(models.Model):
         max_length=50,
         unique=True,
         verbose_name='Слаг',
+        validators=[characters_validator]
     )
     
     class Meta:
@@ -114,13 +108,6 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Title(models.Model):
-    text = models.TextField()
-
-    def __str__(self):
-        return self.text
 
 
 class Review(models.Model):

@@ -21,7 +21,7 @@ from reviews.models import (Category,
                             Title,
                             User
                            )
-from .permissions import IsAuthorOrReadOnly, IsAdminUserOrReadOnly, IsAdmin
+from .permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly, IsAdmin
 from .serializers import (CategorySerializer,
                           GenreSerializer,
                           TitleSerializer,
@@ -34,27 +34,29 @@ from .serializers import (CategorySerializer,
                           UserSelfSerializer
                          )
 from .mixins import CategoryGenreBaseViewSet
+from .filter import TitleFilter
 
 
 class CategoryViewSet(CategoryGenreBaseViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminUserOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly, )
 
 
 class GenreViewSet(CategoryGenreBaseViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdminUserOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly, )
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.annotate(
-        rating=Avg('reviews__score')).order_by('rating')
+        rating=Avg('reviews__rating')).order_by('rating')
     serializer_class = TitleSerializer
-    permission_classes = (IsAdminUserOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly, )
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend, )
+    filterset_class = TitleFilter
 
     def perform_create(self, serializer):
         category = get_object_or_404(
@@ -66,7 +68,7 @@ class TitleViewSet(viewsets.ModelViewSet):
         serializer.save(category=category, genre=genre)
 
     def perform_update(self, serializer):
-        self.perform_create(serializer
+        self.perform_create(serializer)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -177,5 +179,4 @@ class UserViewSet(ModelViewSet):
     def update(self, request, *args, **kwargs):
         if request.method == 'PUT':
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        return super().update(request, *args, **kwargs)                           
-                            
+        return super().update(request, *args, **kwargs)

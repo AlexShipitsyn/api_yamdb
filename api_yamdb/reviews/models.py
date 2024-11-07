@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Avg
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from .validators import characters_validator, year_validator
@@ -102,11 +103,17 @@ class Title(models.Model):
         blank=True,
         null=True,
         verbose_name='Описание')
+    rating = models.FloatField(default=None, null=True, blank=True)
 
     class Meta:
         ordering = ['name']
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
+
+    def update_rating(self):
+        rating = self.reviews.aggregate(Avg('score'))['score__avg']
+        self.rating = rating
+        self.save()
 
     def __str__(self):
         return self.name

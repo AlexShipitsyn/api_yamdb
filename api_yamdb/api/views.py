@@ -40,12 +40,32 @@ class CategoryViewSet(CategoryGenreBaseViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
+    lookup_field = 'slug'
+
+    def get_object(self):
+        slug = self.kwargs['slug']
+        return get_object_or_404(Category, slug=slug)
+
+    def destroy(self, request, *args, **kwargs):
+        genre = self.get_object()
+        genre.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class GenreViewSet(CategoryGenreBaseViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    lookup_field = 'slug'
+
+    def get_object(self):
+        slug = self.kwargs['slug']
+        return get_object_or_404(Genre, slug=slug)
+
+    def destroy(self, request, *args, **kwargs):
+        genre = self.get_object()
+        genre.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class TitleViewSet(viewsets.ModelViewSet):

@@ -135,6 +135,9 @@ class Review(models.Model):
             )
         ]
 
+    def __str__(self):
+        return self.text
+
 
 class Comment(models.Model):
     review = models.ForeignKey(Review,
@@ -146,3 +149,6 @@ class Comment(models.Model):
     text = models.TextField()
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True)
+
+    def __str__(self):
+        return self.text

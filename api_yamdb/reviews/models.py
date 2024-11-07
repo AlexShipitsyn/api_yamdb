@@ -127,6 +127,14 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'],
+                name='unique_review_title'
+            )
+        ]
+
 
 class Comment(models.Model):
     review = models.ForeignKey(Review,

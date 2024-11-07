@@ -120,11 +120,11 @@ class Review(models.Model):
                                on_delete=models.CASCADE,
                                related_name='reviews')
     text = models.TextField()
-    rating = models.PositiveSmallIntegerField(
+    score = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)],
         help_text='Поставьте оценку от 1 до 10'
     )
-    created = models.DateTimeField(
+    pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True)
 
 
@@ -136,5 +136,5 @@ class Comment(models.Model):
                                on_delete=models.CASCADE,
                                related_name='comments')
     text = models.TextField()
-    created = models.DateTimeField(
+    pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True)

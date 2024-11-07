@@ -50,7 +50,7 @@ class GenreViewSet(CategoryGenreBaseViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.annotate(
-        rating=Avg('reviews__rating')).order_by('rating')
+        score=Avg('reviews__score')).order_by('score')
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly, )
     pagination_class = LimitOffsetPagination
@@ -69,6 +69,11 @@ class TitleViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         self.perform_create(serializer)
 
+    def update(self, request, *args, **kwargs):
+        if request.method == 'PUT':
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return super().update(request, *args, **kwargs)
+
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
@@ -86,6 +91,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title = self.get_title()
         serializer.save(author=self.request.user, title=title)
 
+    def update(self, request, *args, **kwargs):
+        if request.method == 'PUT':
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return super().update(request, *args, **kwargs)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
@@ -102,6 +112,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         review = self.get_review()
         serializer.save(author=self.request.user, review=review)
+
+    def update(self, request, *args, **kwargs):
+        if request.method == 'PUT':
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return super().update(request, *args, **kwargs)
 
 
 def send_mail(user):
@@ -174,7 +189,6 @@ class UserViewSet(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    # Если намучались с PUT - вот решение:
     def update(self, request, *args, **kwargs):
         if request.method == 'PUT':
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)

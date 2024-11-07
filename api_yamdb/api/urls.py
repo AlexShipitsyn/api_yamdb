@@ -8,7 +8,7 @@ from .views import (CategoryViewSet,
                     get_code,
                     get_token,
                     UserViewSet
-                   )
+                    )
 app_name = 'api'
 
 router_v1 = DefaultRouter()
@@ -29,8 +29,8 @@ urlpatterns_v1 = [
     path('auth/signup/', get_code),
     path('auth/token/', get_token),
 
-] 
-  
+]
+
 urlpatterns = [
     path('v1/', include(urlpatterns_v1)),
 ]

@@ -41,7 +41,7 @@ class Category(models.Model):
         verbose_name='Слаг',
         validators=[characters_validator]
     )
-    
+
     class Meta:
         ordering = ['name']
         verbose_name = 'Категория'
@@ -49,6 +49,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Genre(models.Model):
     name = models.CharField(
@@ -61,7 +62,7 @@ class Genre(models.Model):
         unique=True,
         verbose_name='Слаг',
     )
-    
+
     class Meta:
         ordering = ['name']
         verbose_name = 'Жанр'
@@ -69,6 +70,7 @@ class Genre(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Title(models.Model):
     name = models.CharField(

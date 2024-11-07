@@ -16,11 +16,10 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from reviews.models import (Category,
                             Genre,
-                            Title,
                             Review,
                             Title,
                             User
-                           )
+                            )
 from .permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly, IsAdmin
 from .serializers import (CategorySerializer,
                           GenreSerializer,
@@ -32,7 +31,7 @@ from .serializers import (CategorySerializer,
                           TokenSerializer,
                           UserSerializer,
                           UserSelfSerializer
-                         )
+                          )
 from .mixins import CategoryGenreBaseViewSet
 from .filter import TitleFilter
 

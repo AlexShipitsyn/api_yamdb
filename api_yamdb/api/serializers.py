@@ -6,7 +6,7 @@ from reviews.models import (Category,
                             Comment,
                             Review,
                             User
-                           )
+                            )
 
 
 class ExistingRegistrationSerializer(serializers.Serializer):
@@ -66,7 +66,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    сategory = CategorySerializer(read_only=True)
+    category = CategorySerializer(read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
     rating = serializers.FloatField(read_only=True)
 
@@ -74,8 +74,7 @@ class TitleSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Title
 
-  
-  
+
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'

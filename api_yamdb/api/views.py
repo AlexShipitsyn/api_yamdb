@@ -1,15 +1,15 @@
+from django.db.models import Avg
 from django.contrib.auth.tokens import default_token_generator as dtg
 from django.core import mail
-from django.db.models import Avg
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
-from rest_framework.pagination import LimitOffsetPagination
+from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import (PageNumberPagination,
+                                       LimitOffsetPagination)
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -111,7 +111,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title = self.get_title()
-        if Review.objects.filter(author=self.request.user, title=title).exists():
+        if Review.objects.filter(author=self.request.user,
+                                 title=title).exists():
             raise ValidationError({'detail': 'Вы уже оставляли отзыв.'})
         serializer.save(author=self.request.user, title=title)
         title.update_rating()

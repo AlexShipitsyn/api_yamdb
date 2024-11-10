@@ -115,12 +115,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
                                  title=title).exists():
             raise ValidationError({'detail': 'Вы уже оставляли отзыв.'})
         serializer.save(author=self.request.user, title=title)
-        title.update_rating()
+        #title.update_rating()
 
     def perform_destroy(self, instance):
         title = instance.title
         super().perform_destroy(instance)
-        title.update_rating
+        #title.update_rating
 
     def update(self, request, *args, **kwargs):
         if request.method == 'PUT':

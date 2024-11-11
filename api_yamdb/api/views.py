@@ -1,6 +1,5 @@
 from django.db.models import Avg
 from django.contrib.auth.tokens import default_token_generator as dtg
-from django.core import mail
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -35,6 +34,7 @@ from .serializers import (CategorySerializer,
                           )
 from .mixins import CategoryGenreBaseViewSet
 from .filter import TitleFilter
+from .utils import send_mail
 
 
 class CategoryViewSet(CategoryGenreBaseViewSet):
@@ -77,6 +77,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitleFilter
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     def perform_create(self, serializer):
         category = get_object_or_404(
@@ -90,16 +91,12 @@ class TitleViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         self.perform_create(serializer)
 
-    def update(self, request, *args, **kwargs):
-        if request.method == 'PUT':
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        return super().update(request, *args, **kwargs)
-
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthorOrReadOnly]
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_title(self):
         title_id = self.kwargs['title_id']
@@ -111,30 +108,20 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title = self.get_title()
-        if Review.objects.filter(author=self.request.user,
-                                 title=title).exists():
+        if title.reviews.filter(author=self.request.user):
             raise ValidationError({'detail': 'Вы уже оставляли отзыв.'})
         serializer.save(author=self.request.user, title=title)
-        #title.update_rating()
-
-    def perform_destroy(self, instance):
-        title = instance.title
-        super().perform_destroy(instance)
-        #title.update_rating
-
-    def update(self, request, *args, **kwargs):
-        if request.method == 'PUT':
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        return super().update(request, *args, **kwargs)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthorOrReadOnly]
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_review(self):
         review_id = self.kwargs['review_id']
-        return get_object_or_404(Review, id=review_id)
+        title_id = self.kwargs['title_id']
+        return get_object_or_404(Review, id=review_id, title_id=title_id)
 
     def get_queryset(self):
         review = self.get_review()
@@ -143,18 +130,6 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         review = self.get_review()
         serializer.save(author=self.request.user, review=review)
-
-    def update(self, request, *args, **kwargs):
-        if request.method == 'PUT':
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        return super().update(request, *args, **kwargs)
-
-
-def send_mail(user):
-    subject = 'Confirmation code'
-    to = user.email
-    text_content = f'Confirmation code: {dtg.make_token(user)}'
-    mail.send_mail(subject, text_content, None, [to])
 
 
 @api_view(['POST'])
@@ -200,6 +175,7 @@ class UserViewSet(ModelViewSet):
     filter_backends = (SearchFilter,)
     search_fields = ('username',)
     lookup_field = 'username'
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(
         methods=['get', 'patch'],
@@ -219,8 +195,3 @@ class UserViewSet(ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def update(self, request, *args, **kwargs):
-        if request.method == 'PUT':
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        return super().update(request, *args, **kwargs)

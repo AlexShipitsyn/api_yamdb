@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework import serializers
 
 from reviews.models import (Category,
@@ -7,6 +8,9 @@ from reviews.models import (Category,
                             Title,
                             User
                             )
+
+MIN_SCORE = 1
+MAX_SCORE = 10
 
 
 class ExistingRegistrationSerializer(serializers.Serializer):
@@ -91,6 +95,10 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True, slug_field='username'
     )
     title = serializers.PrimaryKeyRelatedField(read_only=True)
+    score = serializers.IntegerField(
+        validators=[MinValueValidator(MIN_SCORE),
+                    MaxValueValidator(MAX_SCORE)],
+        help_text='Поставьте оценку от 1 до 10.')
 
     class Meta:
         fields = '__all__'

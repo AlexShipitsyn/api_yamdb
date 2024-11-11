@@ -108,7 +108,7 @@ class Title(models.Model):
         null=True,
         verbose_name='Описание'
     )
-    rating = models.FloatField(default=None, null=True, blank=True)
+   # rating = models.FloatField(default=None, null=True, blank=True)
 
     class Meta:
         ordering = ['name']

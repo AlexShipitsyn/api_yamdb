@@ -115,3 +115,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+DOMAIN_NAME = 'yamdb.com'
+NOREPLY_EMAIL = 'noreply@' + DOMAIN_NAME
+DEFAULT_FROM_EMAIL = NOREPLY_EMAIL

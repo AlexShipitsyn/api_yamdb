@@ -93,7 +93,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         validators=[MinValueValidator(MIN_SCORE),
                     MaxValueValidator(MAX_SCORE)],
         help_text='Поставьте оценку от 1 до 10.')
-    
+
     def validate(self, value):
         author = self.context['request'].user
         title_id = (self.context['request'].
@@ -108,7 +108,7 @@ class ReviewSerializer(serializers.ModelSerializer):
                 f'Отзыв на произведение {title.name} уже существует'
             )
         return value
-    
+
     class Meta:
         fields = '__all__'
         model = Review

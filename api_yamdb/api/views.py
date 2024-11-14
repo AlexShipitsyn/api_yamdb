@@ -1,27 +1,38 @@
-from django.contrib.auth.tokens import default_token_generator as dtg
 from django.db.models import Avg
-from django.shortcuts import get_object_or_404
+from django.contrib.auth.tokens import default_token_generator as dtg
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, viewsets
+from django.shortcuts import get_object_or_404
+from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
-from rest_framework.pagination import (LimitOffsetPagination,
-                                       PageNumberPagination)
+from rest_framework.pagination import (PageNumberPagination,
+                                       LimitOffsetPagination)
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
-from reviews.models import Category, Genre, Review, Title, User
 
-from .filter import TitleFilter
+from reviews.models import (Category,
+                            Genre,
+                            Review,
+                            Title,
+                            User
+                            )
+from .permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly, IsAdmin
+from .serializers import (CategorySerializer,
+                          GenreSerializer,
+                          TitleSerializer,
+                          CommentSerializer,
+                          ReviewSerializer,
+                          ExistingRegistrationSerializer,
+                          NewRegistrationSerializer,
+                          TokenSerializer,
+                          UserSerializer,
+                          UserSelfSerializer
+                          )
 from .mixins import CategoryGenreBaseViewSet
-from .permissions import IsAdmin, IsAdminOrReadOnly, IsAuthorOrReadOnly
-from .serializers import (CategorySerializer, CommentSerializer,
-                          ExistingRegistrationSerializer, GenreSerializer,
-                          NewRegistrationSerializer, ReviewSerializer,
-                          TitleSerializer, TokenSerializer, UserSelfSerializer,
-                          UserSerializer)
+from .filter import TitleFilter
 from .utils import send_mail
 
 

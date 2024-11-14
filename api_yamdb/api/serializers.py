@@ -1,13 +1,7 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-
-from reviews.models import (Category,
-                            Comment,
-                            Genre,
-                            Review,
-                            Title,
-                            User
-                            )
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 MIN_SCORE = 1
 MAX_SCORE = 10
@@ -99,7 +93,22 @@ class ReviewSerializer(serializers.ModelSerializer):
         validators=[MinValueValidator(MIN_SCORE),
                     MaxValueValidator(MAX_SCORE)],
         help_text='Поставьте оценку от 1 до 10.')
-
+    
+    def validate(self, value):
+        author = self.context['request'].user
+        title_id = (self.context['request'].
+                    parser_context['kwargs'].get('title_id'))
+        title = get_object_or_404(
+            Title,
+            id=title_id
+        )
+        if (self.context['request'].method == 'POST'
+                and title.reviews.filter(author=author).exists()):
+            raise serializers.ValidationError(
+                f'Отзыв на произведение {title.name} уже существует'
+            )
+        return value
+    
     class Meta:
         fields = '__all__'
         model = Review

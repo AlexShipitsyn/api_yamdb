@@ -1,6 +1,6 @@
-from django.core import mail
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator as dtg
+from django.core import mail
 
 
 def send_mail(user):
